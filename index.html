@@ -1,0 +1,118 @@
+brain waves
+<select id="bIn" oninput="show()" >
+    <option value="100">High Gamma</option>
+    <option value="50">Low Gamma</option>
+    <option value="25">High Beta</option>
+    <option value="20" selected>Beta</option>
+    <option value="15">Low Beta</option>
+    <option value="10">Alpha</option>
+    <option value="4">Delta</option>
+</select>
+<span id="bOut"></span><br>
+
+frequency
+<input type="range" id="fIn" value="350" min="50" max="800" oninput="show()" />
+<span id="fOut"></span><br>
+
+type
+<input type="range" id="tIn" value="0" min="0" max="3" oninput="show()" />
+<span id="tOut"></span><br>
+volume
+<input type="range" id="vIn" value="30" min="0" max="100" oninput="show()" />
+<span id="vOut"></span><br>
+<br>
+<button onclick='beep();'>Play</button>
+<button onclick='stop();'>Stop</button>
+
+<script>
+
+var oscillatorL = null;
+var oscillatorR = null;
+
+var gainNodeL = null;
+var gainNodeR = null;
+
+var audioCtx = new(window.AudioContext || window.webkitAudioContext)();
+
+show();
+
+function show() {
+  brain_waves = document.getElementById("bIn").value * 1;
+  document.getElementById("bOut").innerHTML = brain_waves + ' Hz';
+
+  frequency = document.getElementById("fIn").value * 1;
+  document.getElementById("fOut").innerHTML = frequency + ' Hz';
+
+  if (oscillatorL != null && oscillatorR != null) {
+    oscillatorL.frequency.value = frequency;
+    oscillatorR.frequency.value = frequency + brain_waves;
+  }
+
+  switch (document.getElementById("tIn").value * 1) {
+    case 0: type = 'sine'; break;
+    case 1: type = 'square'; break;
+    case 2: type = 'sawtooth'; break;
+    case 3: type = 'triangle'; break;
+  }
+  document.getElementById("tOut").innerHTML = type;
+
+  volume = document.getElementById("vIn").value / 100;
+  document.getElementById("vOut").innerHTML = volume;
+
+  if (oscillatorL != null && oscillatorR != null) {
+    oscillatorL.frequency.value = frequency;
+    // is this offset enought?
+    oscillatorR.frequency.value = frequency + brain_waves;
+
+    oscillatorR.type = type;
+    oscillatorL.type = type;
+
+    gainNodeL.gain.value = volume;
+    gainNodeR.gain.value = volume;
+  }
+
+}
+
+function beep() {
+    stop();
+
+    oscillatorL = audioCtx.createOscillator();    
+    oscillatorL.frequency.value = frequency;
+    oscillatorL.type = type;
+
+    oscillatorR = audioCtx.createOscillator();
+    oscillatorR.frequency.value = frequency + brain_waves;
+    oscillatorR.type = type;
+
+    gainNodeL = audioCtx.createGain();
+    gainNodeR = audioCtx.createGain();
+
+    var merger = audioCtx.createChannelMerger(2);
+
+    oscillatorL.connect(gainNodeL);
+    oscillatorR.connect(gainNodeR);
+
+    gainNodeL.connect(merger, 0, 0);
+    gainNodeR.connect(merger, 0, 1);
+
+    merger.connect(audioCtx.destination);
+
+    gainNodeL.gain.value = volume;
+    gainNodeR.gain.value = volume;
+
+    oscillatorL.start();
+    oscillatorR.start();
+}
+
+function stop() {
+  if (oscillatorL != null && oscillatorR != null) {
+    oscillatorL.stop();
+    oscillatorR.stop();
+  }
+
+  oscillatorL = null;
+  oscillatorR = null;
+}
+
+
+</script>
