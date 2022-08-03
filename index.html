@@ -3,13 +3,15 @@
     <p>Use at your own risk</p>
 brain waves
 <select id="bIn" oninput="show()" >
-    <option value="100">High Gamma</option>
-    <option value="50">Low Gamma</option>
-    <option value="25">High Beta</option>
-    <option value="20" selected>Beta</option>
-    <option value="15">Low Beta</option>
-    <option value="10">Alpha</option>
-    <option value="4">Delta</option>
+    <option value="100">High Gamma (100Hz)</option>
+    <option value="50">Low Gamma (50Hz)</option>
+    <option value="40">40Hz</option>
+    <option value="30">30Hz</option>
+    <option value="25">High Beta (25Hz)</option>
+    <option value="20" selected>Beta (20Hz)</option>
+    <option value="15">Low Beta (15Hz)</option>
+    <option value="10">Alpha (10Hz)</option>
+    <option value="4">Delta (4Hz)</option>
 </select>
 <span id="bOut"></span><br>
 
@@ -44,7 +46,7 @@ function show() {
   document.getElementById("bOut").innerHTML = brain_waves + ' Hz';
 
   frequency = document.getElementById("fIn").value * 1;
-  document.getElementById("fOut").innerHTML = frequency + ' Hz';
+  document.getElementById("fOut").innerHTML = frequency + ' Hz and ' + (frequency + brain_waves) + ' Hz' ;
 
   if (oscillatorL != null && oscillatorR != null) {
     oscillatorL.frequency.value = frequency;
